@@ -1,3 +1,5 @@
+
+// Create a d3 funtion and console log
 function buildMetadata(sample) {
     d3.json("samples.json").then((data) => {
         var newData = data.metadata;
@@ -9,14 +11,14 @@ function buildMetadata(sample) {
         console.log(result);
         //Use d3 to select the panel
         var panel = d3.select("#sample-metadata");
-        //clear existing metadata
+        // Clear the existing metadata
         panel.html("");
-        //tag each key,value in metadata
+        //Use Object command to tag each key,value pair 
         Object.entries(result).forEach(([key, value]) => {
             panel.append("h6").text(`${key.toUpperCase()}, ${value}}`);
         });
-//         //Build guage chart
-        // buildGuage(result.wfreq);
+       
+        //I didn't do this bonus part with the Gauge!
     });
 }
 
@@ -29,7 +31,8 @@ function charts(sample) {
         var otu_labels = result.otu_labels;
         var sample_values = result.sample_values;
 
-       //Build bubble chart 
+       //Build bubble chart.
+       //Create varuiable for the layout
        
        var layout = {
            title: "Bacteria Cultures Per Samples",
@@ -39,6 +42,7 @@ function charts(sample) {
            margin: {t:30}
        };
 
+       //Create variable for the trace with details (axes, mode, colours)
        var trace1 = [ {
            x: otu_ids,
            y: sample_values,
@@ -51,10 +55,12 @@ function charts(sample) {
            }
        }];
 
+       //Plotly command
        Plotly.newPlot("bubble", trace1, layout);
 
        var yticks = otu_ids.slice(0,10).map(items => `OTU ${items}`).reverse();
 
+       // Create second trace variable
        var trace2 = [
            {
             x: sample_values.slice(0,10).reverse(),
@@ -74,25 +80,27 @@ function charts(sample) {
     });
 }  
 
-    function init() {
-        // Grab a reference to the dropdown select element
+//Initalise function    
+function init() {
+        // Create variable to select a reference from the dropdown select element
         var selector = d3.select("#selDataset");
-        //use list of names for selection
+        // Use a list of names for selection
         d3.json("samples.json").then((data) => {
             var sampleNames = data.names;
 
+            //forEach function to run through sample data
             sampleNames.forEach((sample) => {
                 selector.append("option")
                 .text(sample).property("value", sample);
             });
-            //Use the first sample for inital plot
+            // Use the first sample for the inital plot
             var initialchart = sampleNames[0];
             charts(initialchart);
             buildMetadata(initialchart);
             });
     }
 
-    //select new data when a new sample is chosen
+    // Select new data when a new sample is chosen
 function optionChanged(newSample){
     charts(newSample);
     buildMetadata(newSample);
